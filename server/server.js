@@ -13,7 +13,11 @@ const app=express()
 await connectDB()
 
 // Middleware
-app.use(cors())
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token']
+}))
 app.use(express.json())  
 
 
