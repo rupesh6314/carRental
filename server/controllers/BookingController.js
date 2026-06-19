@@ -6,10 +6,25 @@ import car from "../models/car.js"
 const checkAvailability=async(car,pickupDate,returnDate)=>{
     const bookings=await booking.find({
         car,
+        status: { $in: ['pending', 'confirmed'] },
         pickupDate:{$lte:returnDate},
         returnDate:{$gte:pickupDate},
     })
     return bookings.length===0
+}
+
+export const getCarBookedDates = async (req, res) => {
+    try {
+        const { carId } = req.params;
+        const bookings = await booking.find({ 
+            car: carId, 
+            status: { $in: ['pending', 'confirmed'] } 
+        }).select('pickupDate returnDate -_id');
+
+        res.json({ success: true, bookedDates: bookings });
+    } catch (err) {
+        res.json({ success: false, message: err.message });
+    }
 }
 
 export const checkAvailabilityofCar=async(req,res)=>{
