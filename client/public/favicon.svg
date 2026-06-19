@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" width="600" height="240">
+  <defs>
+    <linearGradient id="cyanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00F0FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0055FF;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="silverGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E0E0E0;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A0A0A0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="indigoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A3A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2D2D5E;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="240" fill="#ffffff" />
+
+  <!-- Emblem Group -->
+  <g transform="translate(80, 120)">
+    <!-- Outer Orbital Ring -->
+    <ellipse cx="0" cy="0" rx="55" ry="55" fill="none" stroke="url(#cyanGradient)" stroke-width="3" opacity="0.4"/>
+    
+    <!-- Inner Orbital Ring (tilted) -->
+    <ellipse cx="0" cy="0" rx="40" ry="40" fill="none" stroke="url(#cyanGradient)" stroke-width="2" transform="rotate(-30)" opacity="0.6"/>
+
+    <!-- Core Hypercube / Speed Diamond -->
+    <rect x="-15" y="-15" width="30" height="30" fill="none" stroke="url(#silverGradient)" stroke-width="3" transform="rotate(45)"/>
+    <polygon points="0,-22 15,0 0,22 -15,0" fill="url(#cyanGradient)" opacity="0.9"/>
+
+    <!-- Velocity Cut / Speed Line -->
+    <line x1="-30" y1="-30" x2="30" y2="30" stroke="url(#silverGradient)" stroke-width="2" />
+    
+    <!-- Aura Particles -->
+    <circle cx="35" cy="-20" r="2" fill="#00F0FF" opacity="0.8"/>
+    <circle cx="-35" cy="25" r="1.5" fill="#00F0FF" opacity="0.6"/>
+    <circle cx="20" cy="40" r="1" fill="#00F0FF" opacity="0.7"/>
+    <circle cx="-40" cy="-35" r="1.5" fill="#00F0FF" opacity="0.5"/>
+  </g>
+
+  <!-- Wordmark "VELORA" -->
+  <g transform="translate(160, 150)">
+    <text x="0" y="0" font-family="'Arial Black', 'Segoe UI Black', sans-serif" font-size="64" font-weight="900" fill="url(#indigoGradient)" letter-spacing="4">
+      VELORA
+    </text>
+    <!-- Tagline / Accent -->
+    <text x="5" y="30" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="url(#cyanGradient)" letter-spacing="6">
+      LUXURY RENTAL
+    </text>
+  </g>
+
+  <!-- Decorative Cyan Speed Line under text -->
+  <line x1="160" y1="195" x2="300" y2="195" stroke="url(#cyanGradient)" stroke-width="2" />
+</svg>
