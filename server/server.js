@@ -29,8 +29,4 @@ app.use('/api/review',reviewRouter)
 
 
 const PORT=process.env.PORT || 3000;
-if (!process.env.VERCEL) {
-    app.listen(PORT,()=>console.log(`Server is Running on ${PORT}`))
-}
-
-export default app;
+app.listen(PORT,()=>console.log(`Server is Running on ${PORT}`))
