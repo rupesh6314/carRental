@@ -19,7 +19,7 @@ const CarDetails = () => {
     const [reviews, setReviews] = useState([])
     const [bookedDates, setBookedDates] = useState([])
 
-    const currency = import.meta.env.VITE_CURRENCY
+    const currency = import.meta.env.VITE_CURRENCY || '₹';
 
     useEffect(() => {
         console.log("URL ID:", id)
