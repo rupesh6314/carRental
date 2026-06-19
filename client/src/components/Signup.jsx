@@ -28,6 +28,17 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
 
         const { name, email, password, confirmPassword, role } = formData
 
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            return toast.error("Please enter a valid email address")
+        }
+
+        // Validate password length
+        if (password.length < 7) {
+            return toast.error("Password must be at least 7 characters long")
+        }
+
         if (password !== confirmPassword) {
             return toast.error("Passwords do not match")
         }
