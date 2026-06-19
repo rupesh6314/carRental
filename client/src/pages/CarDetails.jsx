@@ -44,6 +44,8 @@ const CarDetails = () => {
             } catch (err) {
                 console.error(err)
             }
+        }
+
         // Fetch booked dates
         const fetchBookedDates = async () => {
             try {
