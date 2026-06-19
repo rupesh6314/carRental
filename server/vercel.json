@@ -21,15 +21,10 @@
             ]
         }
     ],
-    "routes": [
+    "rewrites": [
         {
-            "src": "/(.*)",
-            "methods": ["OPTIONS"],
-            "status": 204
-        },
-        {
-            "src": "/(.*)",
-            "dest": "server.js"
+            "source": "/(.*)",
+            "destination": "/server.js"
         }
     ]
 }
