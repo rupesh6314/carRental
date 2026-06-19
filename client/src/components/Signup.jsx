@@ -65,27 +65,23 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
             <form
                 onSubmit={onSubmitHandler}
                 onClick={(e) => e.stopPropagation()}
-                className='w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 mx-4'
+                className='w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 mx-4 max-h-[95vh] overflow-y-auto scrollbar-hide'
             >
 
-                <div className='flex justify-center mb-6'>
-                    <img
-                        src={assets.logo}
-                        alt="Logo"
-                        className="h-30 w-auto object-contain"
-                    />
+                <div className='flex justify-center mb-4'>
+                    <h1 className="text-3xl font-extrabold tracking-widest text-primary drop-shadow-sm uppercase">Velora</h1>
                 </div>
 
-                <h2 className="text-2xl font-bold text-center text-indigo-600">
+                <h2 className="text-3xl font-bold text-center text-indigo-600">
                     Create Account
                 </h2>
 
-                <p className="mt-2 text-center text-gray-500">
+                <p className="mt-1 text-center text-sm text-gray-500">
                     Create your Velora account to start booking cars.
                 </p>
 
-                <div className="mt-8">
-                    <label className="font-medium text-gray-700">
+                <div className="mt-4">
+                    <label className="font-medium text-sm text-gray-700">
                         Full Name
                     </label>
 
@@ -96,12 +92,12 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
                         onChange={handleChange}
                         required
                         placeholder="Enter your full name"
-                        className="mt-2 w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                     />
                 </div>
 
-                <div className="mt-5">
-                    <label className="font-medium text-gray-700">
+                <div className="mt-3">
+                    <label className="font-medium text-sm text-gray-700">
                         Email
                     </label>
 
@@ -112,12 +108,12 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
                         onChange={handleChange}
                         required
                         placeholder="Enter your email"
-                        className="mt-2 w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                     />
                 </div>
 
-                <div className="mt-5">
-                    <label className="font-medium text-gray-700">
+                <div className="mt-3">
+                    <label className="font-medium text-sm text-gray-700">
                         Password
                     </label>
 
@@ -128,12 +124,12 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
                         onChange={handleChange}
                         required
                         placeholder="Create a password"
-                        className="mt-2 w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                     />
                 </div>
 
-                <div className="mt-5">
-                    <label className="font-medium text-gray-700">
+                <div className="mt-3">
+                    <label className="font-medium text-sm text-gray-700">
                         Confirm Password
                     </label>
 
@@ -144,20 +140,20 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
                         onChange={handleChange}
                         required
                         placeholder="Confirm your password"
-                        className="mt-2 w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        className="mt-1 w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                     />
                 </div>
 
-                <div className="mt-6">
-                    <label className="font-medium text-gray-700 block mb-2">
+                <div className="mt-4">
+                    <label className="font-medium text-sm text-gray-700 block mb-1">
                         Account Type
                     </label>
                     <div className="flex gap-4">
-                        <label className={`flex-1 border rounded-lg p-3 cursor-pointer flex items-center justify-center gap-2 transition-all ${formData.role === 'user' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-300 text-gray-500 hover:bg-gray-50'}`}>
+                        <label className={`flex-1 border rounded-lg p-2 text-sm cursor-pointer flex items-center justify-center gap-2 transition-all ${formData.role === 'user' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-300 text-gray-500 hover:bg-gray-50'}`}>
                             <input type="radio" name="role" value="user" checked={formData.role === 'user'} onChange={handleChange} className="hidden" />
                             Renter
                         </label>
-                        <label className={`flex-1 border rounded-lg p-3 cursor-pointer flex items-center justify-center gap-2 transition-all ${formData.role === 'owner' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-300 text-gray-500 hover:bg-gray-50'}`}>
+                        <label className={`flex-1 border rounded-lg p-2 text-sm cursor-pointer flex items-center justify-center gap-2 transition-all ${formData.role === 'owner' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 font-bold shadow-sm' : 'border-gray-300 text-gray-500 hover:bg-gray-50'}`}>
                             <input type="radio" name="role" value="owner" checked={formData.role === 'owner'} onChange={handleChange} className="hidden" />
                             Car Owner
                         </label>
@@ -166,12 +162,12 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
 
                 <button
                     type="submit"
-                    className="mt-8 w-full py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition cursor-pointer"
+                    className="mt-5 w-full py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition cursor-pointer"
                 >
                     Create Account
                 </button>
 
-                <p className="text-center mt-6 text-sm text-gray-600">
+                <p className="text-center mt-4 text-sm text-gray-600">
                     Already have an account?
                     <button
                         type="button"

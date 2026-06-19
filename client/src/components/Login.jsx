@@ -61,27 +61,23 @@ const Login = ({ setShowLogin, setShowSignup }) => {
             <form
                 onSubmit={onSubmitHandler}
                 onClick={(e) => e.stopPropagation()}
-                className='w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 mx-4'
+                className='w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 mx-4 max-h-[95vh] overflow-y-auto scrollbar-hide'
             >
 
-                <div className='flex justify-center mb-6'>
-                    <img
-                        src={assets.logo}
-                        alt="Logo"
-                        className="h-28 w-auto object-contain"
-                    />
+                <div className='flex justify-center mb-4'>
+                    <h1 className="text-3xl font-extrabold tracking-widest text-primary drop-shadow-sm uppercase">Velora</h1>
                 </div>
 
-                <h2 className="text-2xl font-bold text-center text-indigo-600">
+                <h2 className="text-3xl font-bold text-center text-indigo-600">
                     Sign In
                 </h2>
 
-                <p className="mt-2 text-center text-gray-500">
+                <p className="mt-1 text-center text-sm text-gray-500">
                     Please enter your email and password to continue
                 </p>
 
-                <div className="mt-8">
-                    <label className="font-medium text-gray-700">
+                <div className="mt-6">
+                    <label className="font-medium text-sm text-gray-700">
                         Email
                     </label>
 
@@ -92,12 +88,12 @@ const Login = ({ setShowLogin, setShowSignup }) => {
                         onChange={handleChange}
                         required
                         placeholder="Enter your email"
-                        className="mt-2 w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        className="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                     />
                 </div>
 
-                <div className="mt-5">
-                    <label className="font-medium text-gray-700">
+                <div className="mt-4">
+                    <label className="font-medium text-sm text-gray-700">
                         Password
                     </label>
 
@@ -108,18 +104,18 @@ const Login = ({ setShowLogin, setShowSignup }) => {
                         onChange={handleChange}
                         required
                         placeholder="Enter your password"
-                        className="mt-2 w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
+                        className="mt-1 w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none"
                     />
                 </div>
 
                 <button
                     type="submit"
-                    className="mt-8 w-full py-3 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition cursor-pointer"
+                    className="mt-6 w-full py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition cursor-pointer"
                 >
                     Login
                 </button>
 
-                <p className="text-center mt-6 text-sm text-gray-600">
+                <p className="text-center mt-4 text-sm text-gray-600">
                     Don't have an account?
 
                     <button
