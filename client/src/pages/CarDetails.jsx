@@ -17,6 +17,7 @@ const CarDetails = () => {
 
     const [car, setCar] = useState(null)
     const [reviews, setReviews] = useState([])
+    const [bookedDates, setBookedDates] = useState([])
 
     const currency = import.meta.env.VITE_CURRENCY
 
@@ -43,9 +44,20 @@ const CarDetails = () => {
             } catch (err) {
                 console.error(err)
             }
+        // Fetch booked dates
+        const fetchBookedDates = async () => {
+            try {
+                const { data } = await axios.get(`/api/booking/dates/${id}`)
+                if (data.success) {
+                    setBookedDates(data.bookedDates)
+                }
+            } catch (err) {
+                console.error(err)
+            }
         }
         
         fetchReviews()
+        fetchBookedDates()
 
     }, [cars, id, axios])
 
@@ -65,6 +77,19 @@ const CarDetails = () => {
         if (new Date(returnDate) < new Date(pickupDate)) {
             toast.error("Return date cannot be earlier than pick-up date")
             return
+        }
+
+        const picked = new Date(pickupDate)
+        const returned = new Date(returnDate)
+
+        const isOverlapping = bookedDates.some(b => {
+            const bPick = new Date(b.pickupDate)
+            const bRet = new Date(b.returnDate)
+            return (picked <= bRet && returned >= bPick)
+        })
+
+        if (isOverlapping) {
+            return toast.error("Selected dates overlap with an existing booking. Please choose different dates.")
         }
 
         try {
@@ -214,6 +239,19 @@ const CarDetails = () => {
                         <div className="bg-blue-50 border border-blue-200 text-blue-800 text-sm p-4 rounded-lg">
                             <p className="font-semibold mb-1">Consumption Based Billing</p>
                             <p>You will be billed for the exact liters of fuel consumed during your trip at the agreed rate. No upfront total is estimated.</p>
+                        </div>
+                    )}
+
+                    {bookedDates.length > 0 && (
+                        <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+                            <p className="font-semibold text-red-800 mb-2 text-sm">Already Booked Dates:</p>
+                            <div className="flex flex-col gap-1">
+                                {bookedDates.map((b, i) => (
+                                    <span key={i} className="text-red-600 text-xs font-medium">
+                                        • {b.pickupDate.split('T')[0]} to {b.returnDate.split('T')[0]}
+                                    </span>
+                                ))}
+                            </div>
                         </div>
                     )}
 
