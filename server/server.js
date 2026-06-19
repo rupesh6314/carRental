@@ -10,7 +10,7 @@ import reviewRouter from './routes/reviewRoutes.js'
 const app=express()
 
 //connect MongoDB
-await connectDB()
+connectDB()
 
 // Middleware
 app.use(cors({
