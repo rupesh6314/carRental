@@ -54,7 +54,19 @@ export const addCar=async(req,res)=>{
 export const getOwnerCars=async(req,res)=>{
     try{
         const {_id}=req.user
-        const cars=await Car.find({owner:_id})
+        const cars = await Car.find({owner:_id}).lean()
+        const bookings = await booking.find({owner:_id, status: { $in: ['pending', 'confirmed'] }})
+
+        cars.forEach(car => {
+            car.bookings = bookings
+                .filter(b => String(b.car) === String(car._id))
+                .map(b => ({
+                    pickupDate: b.pickupDate,
+                    returnDate: b.returnDate,
+                    status: b.status
+                }))
+        })
+
         res.json({success:true, cars})
     }
     catch(error){

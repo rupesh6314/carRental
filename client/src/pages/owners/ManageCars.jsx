@@ -77,6 +77,7 @@ const ManageCars=()=>{
                             <th className='p-3 font-medium max-md:hidden'>Category</th>
                             <th className='p-3 font-medium'>Price</th>
                             <th className='p-3 font-medium max-md:hidden'>Status</th>
+                            <th className='p-3 font-medium hidden lg:table-cell'>Booked Dates</th>
                             <th className='p-3 font-medium'>Actions</th>
                         </tr>
                     </thead>
@@ -99,6 +100,20 @@ const ManageCars=()=>{
                                     <span className= {`px-3 py-1 rounded-full text-xs ${car.isAvailable?'bg-green-100 text-green-500' :'bg-red-100 text-red-500'}`}>
                                     {car.isAvailable?'Available':'UnAvailable'}
                                     </span>
+                                </td>
+
+                                <td className='p-3 hidden lg:table-cell text-xs text-gray-500'>
+                                    {car.bookings && car.bookings.length > 0 ? (
+                                        <div className='flex flex-col gap-1'>
+                                            {car.bookings.map((b, i) => (
+                                                <span key={i} className='bg-indigo-50 text-indigo-600 px-2 py-1 rounded border border-indigo-100 whitespace-nowrap'>
+                                                    {b.pickupDate.split('T')[0]} to {b.returnDate.split('T')[0]}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span className='text-gray-400'>No upcoming bookings</span>
+                                    )}
                                 </td>
 
                                 <td className='flex items-center p-3'>
