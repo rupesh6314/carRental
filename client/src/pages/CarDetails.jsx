@@ -62,6 +62,11 @@ const CarDetails = () => {
             return
         }
 
+        if (new Date(returnDate) < new Date(pickupDate)) {
+            toast.error("Return date cannot be earlier than pick-up date")
+            return
+        }
+
         try {
 
             const { data } = await axios.post(

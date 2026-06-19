@@ -17,6 +17,9 @@ const Hero = ()=>{
 
     const handleSearch=(e)=>{
         e.preventDefault()
+        if (pickupDate && returnDate && new Date(returnDate) < new Date(pickupDate)) {
+            return toast.error("Return date cannot be earlier than pick-up date")
+        }
         navigate(`/cars?pickupLocation=${pickupLocation}&pickupDate=${pickupDate}&returnDate=${returnDate}`)
     }
 
@@ -52,7 +55,7 @@ const Hero = ()=>{
                         </div>
                         <div className='flex flex-col items-start gap-1 w-full'>
                             <label htmlFor='return-date' className="text-white/90 text-sm pl-2">Return date</label>
-                            <input value={returnDate} onChange={e=>setReturnDate(e.target.value)} type="date" id="return-date" className='w-full bg-white/20 text-white border border-white/30 rounded-xl px-4 py-2 outline-none' required />
+                            <input value={returnDate} onChange={e=>setReturnDate(e.target.value)} type="date" id="return-date" min={pickupDate} className='w-full bg-white/20 text-white border border-white/30 rounded-xl px-4 py-2 outline-none' required />
                         </div>
                         <button className='flex items-center justify-center gap-2 px-9 py-3.5 max-sm:mt-4 w-full md:w-auto bg-gradient-to-r from-primary to-primary-dull hover:from-primary-dull hover:to-primary text-white rounded-full cursor-pointer shadow-lg hover:shadow-primary/40 hover:-translate-y-1 transition-all duration-300 font-bold'>
                             <img src={assets.search_icon} alt="search" className='w-4 h-4 brightness-0 invert'/>

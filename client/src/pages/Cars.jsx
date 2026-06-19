@@ -18,6 +18,11 @@ const Car = ()=>{
     const {cars, axios}= useAppContext()
     const [filteredCars,setFilteredCars]= useState([])
 
+    useEffect(() => {
+        const newSearch = searchParams.get('search') || '';
+        setInput(newSearch);
+    }, [searchParams]);
+
     const applyFilters = () => {
         if (input === '') {
             setFilteredCars(cars)
