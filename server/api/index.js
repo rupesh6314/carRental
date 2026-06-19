@@ -1,5 +1,9 @@
 export default async function handler(req, res) {
     try {
+        const dbModule = await import('../configs/db.js');
+        const connectDB = dbModule.default;
+        await connectDB();
+        
         const module = await import('../server.js');
         const app = module.default;
         await app(req, res);
