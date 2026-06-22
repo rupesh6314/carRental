@@ -95,22 +95,57 @@ const CarDetails = () => {
         }
 
         try {
-
-            const { data } = await axios.post(
-                "/api/booking/create",
-                {
-                    carId: id,
-                    pickupDate,
-                    returnDate
-                }
+            // 1. Create Razorpay Order
+            const { data: orderData } = await axios.post(
+                "/api/booking/create-order",
+                { carId: id, pickupDate, returnDate }
             )
 
-            if (data.success) {
-                toast.success("Booking Created Successfully")
-                navigate("/my-bookings")
-            } else {
-                toast.error(data.message)
+            if (!orderData.success) {
+                return toast.error(orderData.message)
             }
+
+            // 2. Open Razorpay Checkout Window
+            const options = {
+                key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'dummy_key',
+                amount: orderData.order.amount,
+                currency: "INR",
+                name: "Velora Car Rental",
+                description: `Booking for ${car.make} ${car.model}`,
+                order_id: orderData.order.id,
+                handler: async function (response) {
+                    try {
+                        // 3. Verify Payment and Create Booking in DB
+                        const { data: verifyData } = await axios.post(
+                            "/api/booking/verify-payment",
+                            {
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                bookingData: { carId: id, pickupDate, returnDate, price: orderData.price }
+                            }
+                        )
+
+                        if (verifyData.success) {
+                            toast.success("Payment Successful! Booking Confirmed.")
+                            navigate("/my-bookings")
+                        } else {
+                            toast.error(verifyData.message)
+                        }
+                    } catch (error) {
+                        toast.error("Payment verification failed.")
+                    }
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function (response){
+                toast.error(`Payment Failed: ${response.error.description}`);
+            });
+            rzp.open();
 
         } catch (error) {
             toast.error(

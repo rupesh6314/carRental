@@ -14,6 +14,8 @@ import Login from './components/Login.jsx'
 import Signup from './components/Signup.jsx'
 import {Toaster} from 'react-hot-toast'
 import { useAppContext } from './context/AppContext.jsx'
+import ChatWidget from './components/ChatWidget.jsx'
+
 const App = () => {
   const location = useLocation()
   const isOwnerPath = location.pathname.startsWith('/owner')
@@ -28,6 +30,7 @@ const App = () => {
   return (
     <>
       <Toaster />
+      <ChatWidget />
 
       {showLogin && (
         <Login

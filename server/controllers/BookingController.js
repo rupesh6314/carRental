@@ -51,71 +51,93 @@ export const checkAvailabilityofCar=async(req,res)=>{
 }
 
 
-export const createBooking = async (req, res) => {
+import Razorpay from 'razorpay';
+import crypto from 'crypto';
+import NotificationService from '../services/notificationService.js';
+
+export const createRazorpayOrder = async (req, res) => {
     try {
+        const { carId, pickupDate, returnDate } = req.body;
 
-        const { _id } = req.user
-
-        const { carId, pickupDate, returnDate } = req.body
-
-        const isAvailable = await checkAvailability(
-            carId,
-            pickupDate,
-            returnDate
-        )
-
+        const isAvailable = await checkAvailability(carId, pickupDate, returnDate);
         if (!isAvailable) {
-            return res.json({
-                success: false,
-                message: 'Car is not Available'
-            })
+            return res.json({ success: false, message: 'Car is not Available' });
         }
 
-        const carData = await car.findById(carId)
+        const carData = await car.findById(carId);
+        const picked = new Date(pickupDate);
+        const returned = new Date(returnDate);
 
-        const picked = new Date(pickupDate)
-        const returned = new Date(returnDate)
+        const noOfDays = Math.max(1, Math.ceil((returned - picked) / (1000 * 60 * 60 * 24)));
 
-        const noOfDays = Math.max(
-            1,
-            Math.ceil(
-                (returned - picked) /
-                (1000 * 60 * 60 * 24)
-            )
-        )
+        let price = carData.pricingModel === 'perLiter' ? 0 : carData.pricePerDay * noOfDays;
 
-        let price = 0;
-        if (carData.pricingModel === 'perLiter') {
-            // Price cannot be calculated upfront, billed on consumption later
-            price = 0;
-        } else {
-            price = carData.pricePerDay * noOfDays;
+        if (price === 0) {
+            // For perLiter, create a dummy order of 1 INR just to authorize card/UPI, or bypass payment entirely.
+            // But let's charge a small minimum deposit for perLiter (e.g., 500 INR).
+            price = 500; 
         }
 
-        await booking.create({
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key_id',
+            key_secret: process.env.RAZORPAY_KEY_SECRET || 'dummy_secret',
+        });
+
+        const options = {
+            amount: price * 100, // paisa
+            currency: "INR",
+            receipt: `receipt_${Date.now()}`,
+        };
+
+        const order = await razorpay.orders.create(options);
+        res.json({ success: true, order, price });
+
+    } catch (err) {
+        console.log(err);
+        res.json({ success: false, message: err.message });
+    }
+};
+
+export const verifyAndCreateBooking = async (req, res) => {
+    try {
+        const { _id } = req.user;
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingData } = req.body;
+        const { carId, pickupDate, returnDate, price } = bookingData;
+
+        // Verify Signature
+        const body = razorpay_order_id + "|" + razorpay_payment_id;
+        const expectedSignature = crypto
+            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || 'dummy_secret')
+            .update(body.toString())
+            .digest("hex");
+
+        if (expectedSignature !== razorpay_signature) {
+            return res.json({ success: false, message: "Invalid payment signature" });
+        }
+
+        const carData = await car.findById(carId);
+
+        // Create Booking
+        const newBooking = await booking.create({
             car: carId,
             owner: carData.owner,
             user: _id,
             pickupDate,
             returnDate,
-            price
-        })
+            price,
+            paymentId: razorpay_payment_id
+        });
 
-        res.json({
-            success: true,
-            message: 'Booking Created'
-        })
+        // Send Notifications (Fire and forget, don't await so it doesn't block response)
+        NotificationService.sendBookingNotifications(newBooking._id).catch(err => console.error("Notification Error:", err));
+
+        res.json({ success: true, message: 'Booking Created and Payment Verified' });
 
     } catch (err) {
-
-        console.log(err)
-
-        res.json({
-            success: false,
-            message: err.message
-        })
+        console.log(err);
+        res.json({ success: false, message: err.message });
     }
-}
+};
 
 
 export const getUserBookings= async(req,res)=>{
