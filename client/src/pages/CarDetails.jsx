@@ -51,7 +51,12 @@ const CarDetails = () => {
             try {
                 const { data } = await axios.get(`/api/booking/dates/${id}`)
                 if (data.success) {
-                    setBookedDates(data.bookedDates)
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const futureBookings = data.bookedDates.filter(b => {
+                        return new Date(b.returnDate) >= today;
+                    });
+                    setBookedDates(futureBookings)
                 }
             } catch (err) {
                 console.error(err)
@@ -103,6 +108,18 @@ const CarDetails = () => {
 
             if (!orderData.success) {
                 return toast.error(orderData.message)
+            }
+
+            // 1.5 Check if it's consumption-based (Bypass Razorpay)
+            if (orderData.bypassPayment) {
+                const { data: bypassData } = await axios.post('/api/booking/create-bypassed', { carId: id, pickupDate, returnDate });
+                if (bypassData.success) {
+                    toast.success("Booking Confirmed! Pay later upon consumption.");
+                    navigate("/my-bookings");
+                } else {
+                    toast.error(bypassData.message);
+                }
+                return;
             }
 
             // 2. Open Razorpay Checkout Window

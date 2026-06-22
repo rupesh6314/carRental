@@ -65,18 +65,15 @@ export const createRazorpayOrder = async (req, res) => {
         }
 
         const carData = await car.findById(carId);
+        
+        if (carData.pricingModel === 'perLiter') {
+            return res.json({ success: true, bypassPayment: true, price: 0 });
+        }
+
         const picked = new Date(pickupDate);
         const returned = new Date(returnDate);
-
         const noOfDays = Math.max(1, Math.ceil((returned - picked) / (1000 * 60 * 60 * 24)));
-
-        let price = carData.pricingModel === 'perLiter' ? 0 : carData.pricePerDay * noOfDays;
-
-        if (price === 0) {
-            // For perLiter, create a dummy order of 1 INR just to authorize card/UPI, or bypass payment entirely.
-            // But let's charge a small minimum deposit for perLiter (e.g., 500 INR).
-            price = 500; 
-        }
+        const price = carData.pricePerDay * noOfDays;
 
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key_id',
@@ -128,10 +125,46 @@ export const verifyAndCreateBooking = async (req, res) => {
             paymentId: razorpay_payment_id
         });
 
-        // Send Notifications (Fire and forget, don't await so it doesn't block response)
+        // Send Notifications
         NotificationService.sendBookingNotifications(newBooking._id).catch(err => console.error("Notification Error:", err));
 
         res.json({ success: true, message: 'Booking Created and Payment Verified' });
+
+    } catch (err) {
+        console.log(err);
+        res.json({ success: false, message: err.message });
+    }
+};
+
+export const createBypassedBooking = async (req, res) => {
+    try {
+        const { _id } = req.user;
+        const { carId, pickupDate, returnDate } = req.body;
+
+        const isAvailable = await checkAvailability(carId, pickupDate, returnDate);
+        if (!isAvailable) {
+            return res.json({ success: false, message: 'Car is not Available' });
+        }
+
+        const carData = await car.findById(carId);
+
+        if (carData.pricingModel !== 'perLiter') {
+            return res.json({ success: false, message: 'This car requires upfront payment' });
+        }
+
+        const newBooking = await booking.create({
+            car: carId,
+            owner: carData.owner,
+            user: _id,
+            pickupDate,
+            returnDate,
+            price: 0,
+            paymentId: 'pay_later'
+        });
+
+        NotificationService.sendBookingNotifications(newBooking._id).catch(err => console.error("Notification Error:", err));
+
+        res.json({ success: true, message: 'Booking Created Successfully (Pay Later)' });
 
     } catch (err) {
         console.log(err);
