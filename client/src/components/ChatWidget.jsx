@@ -41,7 +41,7 @@ const ChatWidget = () => {
 
     const handleOptionClick = (option) => {
         setMessages(prev => [...prev, { sender: 'user', text: option.label }]);
-        setShowOptions(false);
+        // Options remain visible
         setLoadingAvailability(true);
         
         setTimeout(() => {
@@ -54,20 +54,17 @@ const ChatWidget = () => {
                     setMessages(prev => [...prev, { sender: 'bot', text: 'Sure! Redirecting you to our fleet to choose a car first...' }]);
                     setTimeout(() => {
                         navigate('/cars');
-                        setIsOpen(false);
                     }, 1500);
                 }
             } else if (option.action === 'list') {
                 setMessages(prev => [...prev, { sender: 'bot', text: 'Here is our amazing fleet! Redirecting...' }]);
                 setTimeout(() => {
                     navigate('/cars');
-                    setIsOpen(false);
                 }, 1500);
             } else if (option.action === 'bookings') {
                 setMessages(prev => [...prev, { sender: 'bot', text: 'Taking you to your bookings dashboard...' }]);
                 setTimeout(() => {
                     navigate('/my-bookings');
-                    setIsOpen(false);
                 }, 1500);
             }
         }, 1000);
