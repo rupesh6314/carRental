@@ -73,7 +73,10 @@ export const createRazorpayOrder = async (req, res) => {
         const picked = new Date(pickupDate);
         const returned = new Date(returnDate);
         const noOfDays = Math.max(1, Math.ceil((returned - picked) / (1000 * 60 * 60 * 24)));
-        const price = carData.pricePerDay * noOfDays;
+        const totalPrice = carData.pricePerDay * noOfDays;
+        
+        // Advance amount fixed to 500 or total price if total is less than 500
+        const advanceAmount = Math.min(500, totalPrice);
 
         const razorpay = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID || 'dummy_key_id',
@@ -81,13 +84,14 @@ export const createRazorpayOrder = async (req, res) => {
         });
 
         const options = {
-            amount: price * 100, // paisa
+            amount: advanceAmount * 100, // paisa
             currency: "INR",
             receipt: `receipt_${Date.now()}`,
         };
 
         const order = await razorpay.orders.create(options);
-        res.json({ success: true, order, price });
+        // Return both advanceAmount (for UI and DB) and totalPrice (for DB)
+        res.json({ success: true, order, advanceAmount, totalPrice });
 
     } catch (err) {
         console.log(err);
@@ -99,31 +103,34 @@ export const verifyAndCreateBooking = async (req, res) => {
     try {
         const { _id } = req.user;
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingData } = req.body;
-        const { carId, pickupDate, returnDate, price } = bookingData;
 
-        // Verify Signature
-        const body = razorpay_order_id + "|" + razorpay_payment_id;
-        const expectedSignature = crypto
-            .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET || 'dummy_secret')
-            .update(body.toString())
-            .digest("hex");
+        const generated_signature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET || 'dummy_secret')
+            .update(razorpay_order_id + "|" + razorpay_payment_id)
+            .digest('hex');
 
-        if (expectedSignature !== razorpay_signature) {
-            return res.json({ success: false, message: "Invalid payment signature" });
+        if (generated_signature !== razorpay_signature) {
+            return res.json({ success: false, message: "Payment verification failed" });
         }
 
-        const carData = await car.findById(carId);
+        const { carId, pickupDate, returnDate, totalPrice, advanceAmount } = bookingData;
+        const carDetails = await car.findById(carId);
+        
+        const balanceAmount = totalPrice - advanceAmount;
 
-        // Create Booking
-        const newBooking = await booking.create({
+        const newBooking = new booking({
             car: carId,
-            owner: carData.owner,
             user: _id,
+            owner: carDetails.owner,
             pickupDate,
             returnDate,
-            price,
+            status: "confirmed",
+            price: totalPrice,
+            advancePaid: advanceAmount,
+            balanceAmount: balanceAmount,
             paymentId: razorpay_payment_id
         });
+
+        await newBooking.save();
 
         // Send Notifications
         NotificationService.sendBookingNotifications(newBooking._id).catch(err => console.error("Notification Error:", err));

@@ -76,7 +76,11 @@ const ManageBookings=()=>{
                                     {bookings.car.pricingModel === 'perLiter' ? (
                                         <span className="text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded text-xs">Consumption Based</span>
                                     ) : (
-                                        <>{currency}{bookings?.price}</>
+                                        <div className="flex flex-col gap-1 text-sm">
+                                            <span>Total: {currency}{bookings?.price}</span>
+                                            <span className="text-green-600 text-xs">Adv: {currency}{bookings?.advancePaid}</span>
+                                            <span className="text-red-500 font-bold bg-red-50 px-1 rounded inline-block w-max">Balance: {currency}{bookings?.balanceAmount}</span>
+                                        </div>
                                     )}
                                 </td>
                                 <td className='p-3 max-md:hidden'>

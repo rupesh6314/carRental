@@ -139,7 +139,7 @@ const CarDetails = () => {
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_signature: response.razorpay_signature,
-                                bookingData: { carId: id, pickupDate, returnDate, price: orderData.price }
+                                bookingData: { carId: id, pickupDate, returnDate, totalPrice: orderData.totalPrice, advanceAmount: orderData.advanceAmount }
                             }
                         )
 
@@ -289,6 +289,13 @@ const CarDetails = () => {
 
                     <hr className='border-borderColor my-6' />
 
+                    {car?.pricingModel !== 'perLiter' && (
+                        <div className="bg-indigo-50 border border-indigo-200 text-indigo-800 text-sm p-4 rounded-lg">
+                            <p className="font-semibold mb-1">Advance Payment to Confirm</p>
+                            <p>Pay an advance of <span className="font-bold">₹500</span> online to securely book this car. Pay the remaining balance directly to the owner at pickup.</p>
+                        </div>
+                    )}
+
                     {car?.pricingModel === 'perLiter' && (
                         <div className="bg-blue-50 border border-blue-200 text-blue-800 text-sm p-4 rounded-lg">
                             <p className="font-semibold mb-1">Consumption Based Billing</p>
@@ -357,7 +364,7 @@ const CarDetails = () => {
                         type='submit'
                         className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'
                     >
-                        Book Now
+                        {car?.pricingModel === 'perLiter' ? 'Book Now (Pay Later)' : 'Pay Advance & Book'}
                     </button>
 
                     <p className='text-center text-sm'>

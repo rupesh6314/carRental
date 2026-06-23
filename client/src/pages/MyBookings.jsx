@@ -123,13 +123,16 @@ const MyBookings = ()=>{
 
                             <div className='md:col-span-1 flex flex-col justify-between gap-6'>
                                 <div className='text-sm text-gray-500 text-right'>
-                                    <p>Total Price</p>
                                     {booking.car.pricingModel === 'perLiter' ? (
                                         <h1 className='text-lg font-semibold text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block mt-1'>Billed on Consumption</h1>
                                     ) : (
-                                        <h1 className='text-2xl font-semibold text-primary'>{currency}{booking?.price}</h1>
+                                        <>
+                                            <p className='text-gray-400'>Total Trip Cost: {currency}{booking?.price}</p>
+                                            <p className='text-green-600 font-medium'>Advance Paid: {currency}{booking?.advancePaid}</p>
+                                            <h1 className='text-xl font-bold text-red-500 mt-1 bg-red-50 px-3 py-1 rounded-md inline-block border border-red-100'>Balance Due: {currency}{booking?.balanceAmount}</h1>
+                                        </>
                                     )}
-                                    <p className='mt-1'>Booked on {booking.createdAt.split('T')[0]}</p>
+                                    <p className='mt-2'>Booked on {booking.createdAt.split('T')[0]}</p>
                                 </div>
                                 <div className='text-right'>
                                     <button onClick={() => setReviewModal({ isOpen: true, carId: booking.car._id })} className='px-4 py-2 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-lg font-medium hover:bg-indigo-100 transition-colors'>
