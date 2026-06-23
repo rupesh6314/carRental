@@ -16,13 +16,13 @@ const Footer = () => {
                         </p>
                         <div className="flex space-x-4">
                             <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition-colors">
-                                <i className="ri-facebook-fill text-xl"></i>
+                                <img src="/src/assets/facebook_logo.svg" alt="Facebook" className="w-5 h-5 invert" />
                             </a>
                             <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition-colors">
-                                <i className="ri-instagram-line text-xl"></i>
+                                <img src="/src/assets/instagram_logo.svg" alt="Instagram" className="w-5 h-5 invert" />
                             </a>
                             <a href="#" className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition-colors">
-                                <i className="ri-twitter-x-line text-xl"></i>
+                                <img src="/src/assets/twitter_logo.svg" alt="Twitter" className="w-5 h-5 invert" />
                             </a>
                         </div>
                     </div>
