@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
 
 const ChatWidget = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([]);
     const [loadingAvailability, setLoadingAvailability] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -16,41 +16,36 @@ const ChatWidget = () => {
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages, showOptions]);
 
     const handleOpenChat = async () => {
         setIsOpen(true);
         if (messages.length === 0) {
-            setMessages([{ sender: 'bot', text: 'Hello! Welcome to Velora Rentals. 🚗' }]);
-            fetchAvailability();
-        }
-    };
-
-    const fetchAvailability = async () => {
-        setLoadingAvailability(true);
-        try {
-            const { data } = await axios.get('/api/user/cars'); // using general car fetch or a specific availability endpoint
-            if (data.success) {
-                const availableCars = data.cars.filter(c => c.isAvailable).length;
-                const totalCars = data.cars.length;
-                
-                setTimeout(() => {
-                    setMessages(prev => [...prev, { 
-                        sender: 'bot', 
-                        text: `Right now, we have ${availableCars} out of ${totalCars} cars available for rent today! How can I help you?` 
-                    }]);
-                    setLoadingAvailability(false);
-                }, 1000);
-            }
-        } catch (error) {
-            setLoadingAvailability(false);
+            // Step 1: User sends initial automated message
+            setMessages([{ sender: 'user', text: 'Hi, I am visiting Velora Car Rentals! 👋' }]);
+            
+            // Step 2: Bot is "typing"
+            setLoadingAvailability(true);
+            
+            // Step 3: Bot replies
+            setTimeout(() => {
+                setMessages(prev => [...prev, { 
+                    sender: 'bot', 
+                    text: 'Greetings! Welcome to Velora Rentals. 🚗 How can I help you today?' 
+                }]);
+                setLoadingAvailability(false);
+                setShowOptions(true);
+            }, 1500);
         }
     };
 
     const handleOptionClick = (option) => {
         setMessages(prev => [...prev, { sender: 'user', text: option.label }]);
+        setShowOptions(false);
+        setLoadingAvailability(true);
         
         setTimeout(() => {
+            setLoadingAvailability(false);
             if (option.action === 'book') {
                 if (location.pathname.includes('/car-details')) {
                     setMessages(prev => [...prev, { sender: 'bot', text: 'Great! Please select your Pick-up and Return dates on this page to continue.' }]);
@@ -68,8 +63,14 @@ const ChatWidget = () => {
                     navigate('/cars');
                     setIsOpen(false);
                 }, 1500);
+            } else if (option.action === 'bookings') {
+                setMessages(prev => [...prev, { sender: 'bot', text: 'Taking you to your bookings dashboard...' }]);
+                setTimeout(() => {
+                    navigate('/my-bookings');
+                    setIsOpen(false);
+                }, 1500);
             }
-        }, 500);
+        }, 1000);
     };
 
     return (
@@ -115,14 +116,19 @@ const ChatWidget = () => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <div className="p-3 bg-white border-t border-gray-100 flex flex-wrap gap-2">
-                        <button onClick={() => handleOptionClick({ label: '📅 Book a car', action: 'book' })} className="text-xs bg-[#25D366]/10 text-[#25D366] font-semibold py-1.5 px-3 rounded-full hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20">
-                            Book a car
-                        </button>
-                        <button onClick={() => handleOptionClick({ label: '🚗 Cars list', action: 'list' })} className="text-xs bg-blue-50 text-blue-600 font-semibold py-1.5 px-3 rounded-full hover:bg-blue-100 transition-colors border border-blue-200">
-                            Cars list
-                        </button>
-                    </div>
+                    {showOptions && (
+                        <div className="p-3 bg-white border-t border-gray-100 flex flex-wrap gap-2">
+                            <button onClick={() => handleOptionClick({ label: '📅 Book a car', action: 'book' })} className="text-xs bg-[#25D366]/10 text-[#25D366] font-semibold py-1.5 px-3 rounded-full hover:bg-[#25D366]/20 transition-colors border border-[#25D366]/20">
+                                Book a car
+                            </button>
+                            <button onClick={() => handleOptionClick({ label: '🚗 Explore cars', action: 'list' })} className="text-xs bg-blue-50 text-blue-600 font-semibold py-1.5 px-3 rounded-full hover:bg-blue-100 transition-colors border border-blue-200">
+                                Explore cars
+                            </button>
+                            <button onClick={() => handleOptionClick({ label: '📋 Check My Bookings', action: 'bookings' })} className="text-xs bg-purple-50 text-purple-600 font-semibold py-1.5 px-3 rounded-full hover:bg-purple-100 transition-colors border border-purple-200">
+                                Check My Bookings
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 
