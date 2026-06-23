@@ -34,7 +34,7 @@ const VisitUs = () => {
                         <div className="flex items-center space-x-3 mb-6">
                             <i className="ri-map-pin-2-fill text-2xl text-indigo-600"></i>
                             <div>
-                                <h3 className="text-xl font-bold text-slate-900">Markapur Car Travels & Bike Rentals</h3>
+                                <h3 className="text-xl font-bold text-slate-900">Markapur Car Travels</h3>
                                 <p className="text-slate-500 text-sm">Markapur, Adarsha Apartments, Sai Nagar, Jawahar Nagar Colony, Opposite to Hero honda Showroom - 523316, Andhra Pradesh, India</p>
                             </div>
                         </div>
@@ -57,7 +57,7 @@ const VisitUs = () => {
                             </li>
                             <li className="flex flex-col sm:flex-row sm:items-center">
                                 <span className="font-semibold text-slate-900 w-32 shrink-0">Services:</span>
-                                <span className="text-slate-600">Self-Drive Cars & Bike Rentals</span>
+                                <span className="text-slate-600">Self-Drive Cars & Car Rentals</span>
                             </li>
                             <li className="flex flex-col sm:flex-row sm:items-center">
                                 <span className="font-semibold text-slate-900 w-32 shrink-0">Availability:</span>
