@@ -15,6 +15,8 @@ import Signup from './components/Signup.jsx'
 import {Toaster} from 'react-hot-toast'
 import { useAppContext } from './context/AppContext.jsx'
 import ChatWidget from './components/ChatWidget.jsx'
+import Footer from './components/Footer.jsx'
+import FloatingCallButton from './components/FloatingCallButton.jsx'
 
 const App = () => {
   const location = useLocation()
@@ -31,6 +33,7 @@ const App = () => {
     <>
       <Toaster />
       <ChatWidget />
+      <FloatingCallButton />
 
       {showLogin && (
         <Login
@@ -63,6 +66,8 @@ const App = () => {
           </Route>
         </Routes>
       </div>
+
+      {!isOwnerPath && <Footer />}
     </>
   )
 }
