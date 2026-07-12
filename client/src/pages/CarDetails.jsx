@@ -283,7 +283,7 @@ const CarDetails = () => {
                         {currency}
                         {car?.pricePerDay || car?.price || 0}
                         <span className='text-base text-gray-400 font-normal ml-2'>
-                            {car?.pricingModel === 'perLiter' ? 'per liter' : 'per day'}
+                            {car?.pricingModel === 'perLiter' ? 'per Kilometer' : 'per day'}
                         </span>
                     </p>
 
