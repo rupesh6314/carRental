@@ -38,7 +38,7 @@ const CarCard = ({ car }) => {
                         {currency}{car.pricePerDay}
                     </span>
                     <span className='text-xs opacity-80'>
-                        {car.pricingModel === 'perLiter' ? ' / liter' : ' / day'}
+                        {car.pricingModel === 'perLiter' ? ' / kilometer' : ' / day'}
                     </span>
                 </div>
 
