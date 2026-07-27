@@ -94,8 +94,9 @@ export const createRazorpayOrder = async (req, res) => {
         res.json({ success: true, order, advanceAmount, totalPrice });
 
     } catch (err) {
-        console.log(err);
-        res.json({ success: false, message: err.message });
+        console.log("Razorpay Error:", err);
+        const errorMessage = err.message || (err.error && err.error.description) || "Payment gateway error. Please check API keys.";
+        res.json({ success: false, message: errorMessage });
     }
 };
 
