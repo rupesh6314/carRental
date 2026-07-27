@@ -175,9 +175,6 @@ const CarDetails = () => {
     if (!car) {
         return <Loader />
     }
-
-    console.log("car =", car)
-    console.log("pricePerDay =", car?.pricePerDay)
     return car ? (
         <div className='px-6 md:px-16 lg:px-24 xl:px-32 mt-16'>
 
