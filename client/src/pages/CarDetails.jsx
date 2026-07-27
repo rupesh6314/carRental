@@ -18,6 +18,7 @@ const CarDetails = () => {
     const [car, setCar] = useState(null)
     const [reviews, setReviews] = useState([])
     const [bookedDates, setBookedDates] = useState([])
+    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const currency = import.meta.env.VITE_CURRENCY || '₹';
 
@@ -99,6 +100,8 @@ const CarDetails = () => {
             return toast.error("Selected dates overlap with an existing booking. Please choose different dates.")
         }
 
+        setIsSubmitting(true)
+
         try {
             // 1. Create Razorpay Order
             const { data: orderData } = await axios.post(
@@ -107,17 +110,19 @@ const CarDetails = () => {
             )
 
             if (!orderData.success) {
-                return toast.error(orderData.message)
+                setIsSubmitting(false)
+                return toast.error(orderData.message, { id: 'booking-toast' })
             }
 
             // 1.5 Check if it's consumption-based (Bypass Razorpay)
             if (orderData.bypassPayment) {
                 const { data: bypassData } = await axios.post('/api/booking/create-bypassed', { carId: id, pickupDate, returnDate });
                 if (bypassData.success) {
-                    toast.success("Booking Confirmed! Pay later upon consumption.");
+                    toast.success("Booking Confirmed! Pay later upon consumption.", { id: 'booking-toast' });
                     navigate("/my-bookings");
                 } else {
-                    toast.error(bypassData.message);
+                    toast.error(bypassData.message, { id: 'booking-toast' });
+                    setIsSubmitting(false);
                 }
                 return;
             }
@@ -144,13 +149,15 @@ const CarDetails = () => {
                         )
 
                         if (verifyData.success) {
-                            toast.success("Payment Successful! Booking Confirmed.")
+                            toast.success("Payment Successful! Booking Confirmed.", { id: 'booking-toast' })
                             navigate("/my-bookings")
                         } else {
-                            toast.error(verifyData.message)
+                            toast.error(verifyData.message, { id: 'booking-toast' })
+                            setIsSubmitting(false)
                         }
                     } catch (error) {
-                        toast.error("Payment verification failed.")
+                        toast.error("Payment verification failed.", { id: 'booking-toast' })
+                        setIsSubmitting(false)
                     }
                 },
                 theme: {
@@ -160,14 +167,16 @@ const CarDetails = () => {
 
             const rzp = new window.Razorpay(options);
             rzp.on('payment.failed', function (response){
-                toast.error(`Payment Failed: ${response.error.description}`);
+                toast.error(`Payment Failed: ${response.error.description}`, { id: 'booking-toast' });
+                setIsSubmitting(false);
             });
             rzp.open();
 
         } catch (error) {
             toast.error(
-                error.message
+                error.message, { id: 'booking-toast' }
             )
+            setIsSubmitting(false);
         }
     }
 
@@ -304,11 +313,18 @@ const CarDetails = () => {
                         <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
                             <p className="font-semibold text-red-800 mb-2 text-sm">Already Booked Dates:</p>
                             <div className="flex flex-col gap-1">
-                                {bookedDates.map((b, i) => (
-                                    <span key={i} className="text-red-600 text-xs font-medium">
-                                        • {b.pickupDate.split('T')[0]} to {b.returnDate.split('T')[0]}
-                                    </span>
-                                ))}
+                                {bookedDates.map((b, i) => {
+                                    const today = new Date();
+                                    today.setHours(0, 0, 0, 0);
+                                    const pickDate = new Date(b.pickupDate);
+                                    const displayPick = pickDate < today ? today : pickDate;
+                                    
+                                    return (
+                                        <span key={i} className="text-red-600 text-xs font-medium">
+                                            • {displayPick.toISOString().split('T')[0]} to {b.returnDate.split('T')[0]}
+                                        </span>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
@@ -359,9 +375,10 @@ const CarDetails = () => {
 
                     <button
                         type='submit'
-                        className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer'
+                        disabled={isSubmitting}
+                        className='w-full bg-primary hover:bg-primary-dull transition-all py-3 font-medium text-white rounded-xl cursor-pointer disabled:bg-gray-400 disabled:cursor-not-allowed'
                     >
-                        {car?.pricingModel === 'perLiter' ? 'Book Now (Pay Later)' : 'Pay Advance & Book'}
+                        {isSubmitting ? 'Processing...' : (car?.pricingModel === 'perLiter' ? 'Book Now (Pay Later)' : 'Pay Advance & Book')}
                     </button>
 
                     <p className='text-center text-sm'>
