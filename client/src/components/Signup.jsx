@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
 import { assets } from '../assets/assets'
 import toast from 'react-hot-toast'
@@ -15,6 +16,18 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
         confirmPassword: '',
         role: 'user'
     })
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                setShowSignup(false)
+            }
+        }
+        window.addEventListener('keydown', handleEscape)
+        return () => window.removeEventListener('keydown', handleEscape)
+    }, [setShowSignup])
 
     const handleChange = (e) => {
         setFormData({
@@ -25,22 +38,27 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
+        if (loading) return
+        setLoading(true)
 
         const { name, email, password, confirmPassword, role } = formData
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(email)) {
-            return toast.error("Please enter a valid email address")
+            setLoading(false)
+            return toast.error("Please enter a valid email address", { id: 'auth-toast' })
         }
 
         // Validate password length
         if (password.length < 7) {
-            return toast.error("Password must be at least 7 characters long")
+            setLoading(false)
+            return toast.error("Password must be at least 7 characters long", { id: 'auth-toast' })
         }
 
         if (password !== confirmPassword) {
-            return toast.error("Passwords do not match")
+            setLoading(false)
+            return toast.error("Passwords do not match", { id: 'auth-toast' })
         }
 
         try {
@@ -56,14 +74,16 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
 
                 setToken(data.token)
 
-                toast.success("Account created successfully!")
+                toast.success("Account created successfully!", { id: 'auth-toast' })
 
                 setShowSignup(false)
             } else {
-                toast.error(data.message)
+                toast.error(data.message, { id: 'auth-toast' })
             }
         } catch (error) {
-            toast.error(error.response?.data?.message || error.message)
+            toast.error(error.response?.data?.message || error.message, { id: 'auth-toast' })
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -79,7 +99,17 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
                 className='w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 mx-4 max-h-[95vh] overflow-y-auto scrollbar-hide'
             >
 
-                <div className='flex justify-center mb-4'>
+                <div className='flex justify-center mb-4 relative'>
+                    <button 
+                        type="button" 
+                        onClick={() => {
+                            setShowSignup(false)
+                            navigate('/')
+                        }}
+                        className="absolute left-0 top-1 text-xs font-semibold text-gray-500 hover:text-indigo-600 transition flex items-center gap-1 cursor-pointer"
+                    >
+                        &larr; Back to home
+                    </button>
                     <h1 className="text-3xl font-extrabold tracking-widest text-primary drop-shadow-sm uppercase">Velora</h1>
                 </div>
 
@@ -173,9 +203,10 @@ const Signup = ({ setShowSignup, setShowLogin }) => {
 
                 <button
                     type="submit"
-                    className="mt-5 w-full py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition cursor-pointer"
+                    disabled={loading}
+                    className={`mt-5 w-full py-2.5 rounded-lg bg-indigo-600 text-white font-medium transition cursor-pointer ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-indigo-700'}`}
                 >
-                    Create Account
+                    {loading ? 'Creating Account...' : 'Create Account'}
                 </button>
 
                 <p className="text-center mt-4 text-sm text-gray-600">

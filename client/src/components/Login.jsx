@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { assets } from '../assets/assets'
 import { useAppContext } from '../context/AppContext'
 import toast from 'react-hot-toast'
@@ -11,6 +12,18 @@ const Login = ({ setShowLogin, setShowSignup }) => {
         email: '',
         password: ''
     })
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                setShowLogin(false)
+            }
+        }
+        window.addEventListener('keydown', handleEscape)
+        return () => window.removeEventListener('keydown', handleEscape)
+    }, [setShowLogin])
 
     const handleChange = (e) => {
         setFormData({
@@ -21,6 +34,8 @@ const Login = ({ setShowLogin, setShowSignup }) => {
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
+        if (loading) return
+        setLoading(true)
 
         try {
 
@@ -34,12 +49,12 @@ const Login = ({ setShowLogin, setShowSignup }) => {
                 localStorage.setItem('token', data.token)
                 setToken(data.token)
 
-                toast.success('Login Successful')
+                toast.success('Login Successful', { id: 'auth-toast' })
 
                 setShowLogin(false)
 
             } else {
-                toast.error(data.message)
+                toast.error(data.message, { id: 'auth-toast' })
             }
 
         } catch (error) {
@@ -47,8 +62,11 @@ const Login = ({ setShowLogin, setShowSignup }) => {
             toast.error(
                 error.response?.data?.message ||
                 error.message ||
-                'Something went wrong'
+                'Something went wrong',
+                { id: 'auth-toast' }
             )
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -64,7 +82,17 @@ const Login = ({ setShowLogin, setShowSignup }) => {
                 className='w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 mx-4 max-h-[95vh] overflow-y-auto scrollbar-hide'
             >
 
-                <div className='flex justify-center mb-4'>
+                <div className='flex justify-center mb-4 relative'>
+                    <button 
+                        type="button" 
+                        onClick={() => {
+                            setShowLogin(false)
+                            navigate('/')
+                        }}
+                        className="absolute left-0 top-1 text-xs font-semibold text-gray-500 hover:text-indigo-600 transition flex items-center gap-1 cursor-pointer"
+                    >
+                        &larr; Back to home
+                    </button>
                     <h1 className="text-3xl font-extrabold tracking-widest text-primary drop-shadow-sm uppercase">Velora</h1>
                 </div>
 
@@ -110,9 +138,10 @@ const Login = ({ setShowLogin, setShowSignup }) => {
 
                 <button
                     type="submit"
-                    className="mt-6 w-full py-2.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition cursor-pointer"
+                    disabled={loading}
+                    className={`mt-6 w-full py-2.5 rounded-lg bg-indigo-600 text-white font-medium transition cursor-pointer ${loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-indigo-700'}`}
                 >
-                    Login
+                    {loading ? 'Logging in...' : 'Login'}
                 </button>
 
                 <p className="text-center mt-4 text-sm text-gray-600">

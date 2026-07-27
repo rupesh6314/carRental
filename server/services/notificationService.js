@@ -30,11 +30,11 @@ class NotificationService {
             const userData = bookingDoc.user;
             const ownerData = bookingDoc.owner;
 
-            const emailSubjectUser = `Booking Confirmed: ${carData.make} ${carData.model}`;
-            const emailTextUser = `Hi ${userData.name},\n\nYour booking for ${carData.make} ${carData.model} has been confirmed.\nPickup Date: ${new Date(bookingDoc.pickupDate).toLocaleDateString()}\nReturn Date: ${new Date(bookingDoc.returnDate).toLocaleDateString()}\nAmount Paid: ₹${bookingDoc.price}\n\nThank you for choosing Velora!`;
+            const emailSubjectUser = `Booking Confirmed: ${carData.brand} ${carData.model}`;
+            const emailTextUser = `Hi ${userData.name},\n\nYour booking for ${carData.brand} ${carData.model} has been confirmed.\nPickup Date: ${new Date(bookingDoc.pickupDate).toLocaleDateString()}\nReturn Date: ${new Date(bookingDoc.returnDate).toLocaleDateString()}\nAmount Paid: ₹${bookingDoc.price}\n\nThank you for choosing Velora!`;
 
-            const emailSubjectOwner = `New Booking Received: ${carData.make} ${carData.model}`;
-            const emailTextOwner = `Hi ${ownerData.name},\n\nYou have received a new booking for your ${carData.make} ${carData.model}.\nRenter: ${userData.name}\nPickup Date: ${new Date(bookingDoc.pickupDate).toLocaleDateString()}\nReturn Date: ${new Date(bookingDoc.returnDate).toLocaleDateString()}\nEarnings: ₹${bookingDoc.price}\n\nPlease prepare the vehicle for the rental period.`;
+            const emailSubjectOwner = `New Booking Received: ${carData.brand} ${carData.model}`;
+            const emailTextOwner = `Hi ${ownerData.name},\n\nYou have received a new booking for your ${carData.brand} ${carData.model}.\nRenter: ${userData.name}\nPickup Date: ${new Date(bookingDoc.pickupDate).toLocaleDateString()}\nReturn Date: ${new Date(bookingDoc.returnDate).toLocaleDateString()}\nEarnings: ₹${bookingDoc.price}\n\nPlease prepare the vehicle for the rental period.`;
 
             // Send Emails
             if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
@@ -55,7 +55,7 @@ class NotificationService {
 
             // Send WhatsApp notifications (if configured)
             if (this.twilioClient && process.env.TWILIO_WHATSAPP_NUMBER && process.env.OWNER_WHATSAPP_NUMBER) {
-                const waMessage = `🚗 *Velora Booking Update*\n\nNew Booking confirmed for ${carData.make} ${carData.model}!\nRenter: ${userData.name}\nDates: ${new Date(bookingDoc.pickupDate).toLocaleDateString()} to ${new Date(bookingDoc.returnDate).toLocaleDateString()}`;
+                const waMessage = `🚗 *Velora Booking Update*\n\nNew Booking confirmed for ${carData.brand} ${carData.model}!\nRenter: ${userData.name}\nDates: ${new Date(bookingDoc.pickupDate).toLocaleDateString()} to ${new Date(bookingDoc.returnDate).toLocaleDateString()}`;
                 
                 // Twilio Sandbox requires numbers in format: 'whatsapp:+919876543210'
                 await this.twilioClient.messages.create({

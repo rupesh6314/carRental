@@ -41,7 +41,6 @@ const ChatWidget = () => {
 
     const handleOptionClick = (option) => {
         setMessages(prev => [...prev, { sender: 'user', text: option.label }]);
-        // Options remain visible
         setLoadingAvailability(true);
         
         setTimeout(() => {
@@ -50,22 +49,26 @@ const ChatWidget = () => {
                 if (location.pathname.includes('/car-details')) {
                     setMessages(prev => [...prev, { sender: 'bot', text: 'Great! Please select your Pick-up and Return dates on this page to continue.' }]);
                     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    setTimeout(() => setIsOpen(false), 3000);
                 } else {
                     setMessages(prev => [...prev, { sender: 'bot', text: 'Sure! Redirecting you to our fleet to choose a car first...' }]);
                     setTimeout(() => {
+                        setIsOpen(false);
                         navigate('/cars');
-                    }, 1500);
+                    }, 2500);
                 }
             } else if (option.action === 'list') {
                 setMessages(prev => [...prev, { sender: 'bot', text: 'Here is our amazing fleet! Redirecting...' }]);
                 setTimeout(() => {
+                    setIsOpen(false);
                     navigate('/cars');
-                }, 1500);
+                }, 2500);
             } else if (option.action === 'bookings') {
                 setMessages(prev => [...prev, { sender: 'bot', text: 'Taking you to your bookings dashboard...' }]);
                 setTimeout(() => {
+                    setIsOpen(false);
                     navigate('/my-bookings');
-                }, 1500);
+                }, 2500);
             }
         }, 1000);
     };
